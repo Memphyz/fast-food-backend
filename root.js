@@ -1,6 +1,7 @@
 const express = require("express");
 const { default: mongoose } = require("mongoose");
 const user_endpoints = require("./routers/user/user-module");
+const cors = require("cors");
 require("dotenv").config();
 const config = require("./server-config");
 
@@ -13,8 +14,9 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(cors());
 
-app.use("/user", user_endpoints);
+app.use("/api/v1/user", user_endpoints);
 
 mongoose
   .connect(URL)
