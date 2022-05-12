@@ -10,4 +10,9 @@ const minMaxLength = (min, max) => {
   return (value) => value.length > min && value.length < max;
 };
 
-module.exports = { minLength, maxLength, minMaxLength };
+
+const isDate = (value) => {
+  return !isNaN(new Date(value))
+}
+
+module.exports = {minLength, maxLength, minMaxLength, isDate};
