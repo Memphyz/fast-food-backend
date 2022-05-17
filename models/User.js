@@ -7,6 +7,6 @@ const User = schema("User", {
   email: String,
   born: Date,
   cpf: String,
-});
+}, 'cpf');
 
 module.exports = User;

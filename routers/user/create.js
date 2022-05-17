@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const {minLength, maxLength, isDate} = require("./../../utils/validators");
 const User = require("../../models/User");
 const HTTPS = require("../../utils/responses");
+const validate = require("../../utils/validate");
 
 const router = Router();
 
@@ -60,16 +61,9 @@ router.post(
     .withMessage("A data de nascimento não deve ser vazia!")
     .custom(isDate)
     .withMessage("A data de nascimento está inválida!"),
+  validate,
   async (requisition, response) => {
     try {
-      const errorsFound = validationResult(requisition);
-      if (!errorsFound.isEmpty()) {
-        const error = Object.values(errorsFound.mapped())[0];
-        response
-          .status(HTTPS.UNPROCESSABLE_ENTITY)
-          .json({field: error.param, message: error.msg});
-        return undefined;
-      }
       const body = requisition.body;
       const exist = await User.findOne({
         $or: [

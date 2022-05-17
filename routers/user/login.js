@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const {minLength, maxLength} = require("./../../utils/validators");
 const HTTPS = require("../../utils/responses");
 const User = require("../../models/User");
+const {validate} = require("../../models/User");
 
 const router = Router();
 
@@ -29,6 +30,7 @@ router.post('/login',
           .withMessage("A senha deve conter no mínimo 5 caracteres!")
           .custom(maxLength(15))
           .withMessage("a senha deve conter no máximo 5 caracteres"),
+     validate,
      async (requisition, response) => {
           try {
                const body = requisition.body;
@@ -57,7 +59,7 @@ router.post('/login',
                     id: user._id
                }, secret);
                const cryptedUser = await bcrypt.hash(JSON.stringify(user), salt)
-               response.status(HTTPS.OK).json({message: `Bem vindo ${user.name} ${user.surname}!`, token, user: cryptedUser})
+               response.status(HTTPS.OK).json({title: 'Bom te ver por aqui!', message: `Bem vindo ${user.name} ${user.surname}!`, token, user: cryptedUser})
           } catch (error) {
                response
                     .status(HTTPS.INTERNAL_SERVER_ERROR)

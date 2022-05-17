@@ -1,10 +1,10 @@
-const { default: mongoose, Schema } = require("mongoose");
+const {default: mongoose, Schema} = require("mongoose");
 
-const schema = (name, model) => {
+const schema = (name, model, unique = '_id') => {
   return mongoose.model(
     name,
-    new Schema(model, { versionKey: false })
-      .index({ cpf: 1 }, { unique: true })
+    new Schema(model, {versionKey: false})
+      .index({[unique]: 1}, {unique: true})
       .set("toJSON", {
         virtuals: true,
         versionKey: false,
