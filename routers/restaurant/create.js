@@ -1,8 +1,9 @@
 const {Router} = require("express");
-const {body} = require("express-validator");
+const {body, validationResult} = require("express-validator");
+const User = require("../../models/User");
 const HTTPS = require("../../utils/responses");
 const validate = require("../../utils/validate");
-const {minLength, maxLength, nonRequired, max, min} = require("../../utils/validators");
+const {minLength, maxLength, nonRequired, max, min, isHours} = require("../../utils/validators");
 const Restaurant = require('./../../models/Restaurant')
 
 
@@ -128,9 +129,14 @@ router.post('/',
           .withMessage(`O status deve ser informado!`),
      body('open')
           .exists()
-          .withMessage(`A flag de abertura deve ser informada!`)
-          .isBoolean()
-          .withMessage(`A flag de abertura deve ser informada!`),
+          .withMessage('A hora de abertura deve ser informada!')
+          .custom(isHours)
+          .withMessage('A hora de abertura deve ser uma hora válida!'),
+     body('close')
+          .exists()
+          .withMessage('A hora de fechamento deve ser informada!')
+          .custom(isHours)
+          .withMessage('A hora de fechamento deve ser uma hora válida!'),
      body('register')
           .custom(nonRequired)
           .withMessage(`A data de cadastro não deve ser informada!`),
@@ -144,13 +150,21 @@ router.post('/',
           .isArray({min: 1, max: 10})
           .withMessage('Deve haver no mínimo 1 e no máximo 10 proprietários!'),
      body('products')
-          .isArray({min: 10, max: 200})
-          .withMessage('O mínimo de produtos cadastrados é de 10 e o máximo é 200!'),
-     validate,
-     (requisition, response) => {
+          .isArray({min: 0, max: 200})
+          .withMessage('O máximo de produtos cadastrados é 200!'),
+     async (requisition, response) => {
           try {
-               Restaurant.create(requisition.body).then((requisition) => {
-                    response.status(HTTPS.CREATED).json({message: `Restaurante ${requisition.body.name} criado com sucesso!`});
+               validate(requisition, response);
+               const users = requisition.body.user;
+               users.forEach(async (userId) => {
+                    const user = await User.findById(userId);
+                    if (!user) {
+                         requisition.status(HTTPS.UNPROCESSABLE_ENTITY).json({message: `Usuário ${userId} não encontrado!`})
+                    }
+               })
+               const body = requisition.body;
+               Restaurant.create(requisition.body).then(() => {
+                    response.status(HTTPS.CREATED).json({message: `Restaurante ${body.name} criado com sucesso!`});
                })
           } catch (errors) {
                response.status(HTTPS.INTERNAL_SERVER_ERROR).json({errors});

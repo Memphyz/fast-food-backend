@@ -1,6 +1,6 @@
 const {default: mongoose, Schema} = require("mongoose");
 
-const schema = (name, model, unique = '_id') => {
+const schema = (name, model, unique = '') => {
   return mongoose.model(
     name,
     new Schema(model, {versionKey: false})

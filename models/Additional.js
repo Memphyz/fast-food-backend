@@ -1,10 +1,11 @@
 const schema = require("../utils/global-schema");
 
-const Additionals = schema('Additionals', {
+const Additional = schema('Additionals', {
      unitPrice: Number,
      total: Number,
      quantity: Number,
+     name: String,
      notes: String
 });
 
-module.exports = Additionals;
+module.exports = Additional;

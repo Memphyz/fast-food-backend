@@ -1,19 +1,17 @@
 const {Schema} = require("mongoose");
 const Order = require("../enums/Order");
 const schema = require("../utils/global-schema");
-const Additionals = require("./Additional");
-const User = require("./User");
+const Additional = require("./Additional");
 
 
 const Product = schema('Product', {
      name: String,
      description: String,
      price: Number,
-     status: [Order],
      active: Boolean,
      payment: [{type: String, ref: 'Payment'}],
      restaurant: {type: Schema.Types.ObjectId, ref: 'Restaurant'},
      client: {type: Schema.Types.ObjectId, ref: 'User'},
-     additionals: [Additionals]
+     additionals: [{type: Object, ref: 'Additional'}],
 })
 module.exports = Product;

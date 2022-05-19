@@ -14,6 +14,7 @@ app.use(
     extended: true,
   })
 );
+app.setMaxListeners(10)
 app.use(express.json());
 app.use(cors());
 
