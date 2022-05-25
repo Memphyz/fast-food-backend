@@ -1,8 +1,5 @@
 const {Schema} = require("mongoose");
 const schema = require("../utils/global-schema");
-const Address = require("./Address");
-const Product = require("./Product");
-const User = require("./User");
 
 
 const Restaurant = schema('Restaurant', {
@@ -11,7 +8,13 @@ const Restaurant = schema('Restaurant', {
      kitchen: String,
      address: {type: Object, ref: 'Address'},
      active: Boolean,
+     photo: String,
      open: String,
+     rate: Number,
+     created: Date,
+     createdBy: String,
+     updated: Date,
+     updatedBy: String,
      close: String,
      register: Date,
      update: Date,

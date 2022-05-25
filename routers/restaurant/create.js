@@ -1,11 +1,12 @@
 const {Router} = require("express");
 const {body, validationResult} = require("express-validator");
 const User = require("../../models/User");
+const auth = require("../../utils/check-token");
+const me = require("../../utils/me");
 const HTTPS = require("../../utils/responses");
 const validate = require("../../utils/validate");
-const {minLength, maxLength, nonRequired, max, min, isHours} = require("../../utils/validators");
-const Restaurant = require('./../../models/Restaurant')
-
+const {minLength, maxLength, nonRequired, max, min, isHours, isNumber} = require("../../utils/validators");
+const Restaurant = require('./../../models/Restaurant');
 
 
 const router = Router();
@@ -41,6 +42,18 @@ router.post('/',
           .withMessage('A cozinha deve conter no máximo 120 caracteres!')
           .isAlpha('pt-BR', {ignore: ' '})
           .withMessage('A cozinha deve conter apenas letras!'),
+     body('created')
+          .isEmpty({ignore_whitespace: true})
+          .withMessage('A data de criação não deve ser informada!'),
+     body('createdBy')
+          .isEmpty({ignore_whitespace: true})
+          .withMessage('O usuário de criação não deve ser informado!'),
+     body('updated')
+          .isEmpty({ignore_whitespace: true})
+          .withMessage('A data de atualização não deve ser informada!'),
+     body('updatedBy')
+          .isEmpty({ignore_whitespace: true})
+          .withMessage('O usuário de atualização não deve ser informado!'),
      body('address')
           .exists()
           .withMessage(`O endereço deve ser informado!`)
@@ -86,8 +99,8 @@ router.post('/',
           .withMessage(`O bairro deve ser informado!`)
           .notEmpty({ignore_whitespace: true})
           .withMessage(`O bairro não deve ser vazio!`)
-          .custom(minLength(5))
-          .withMessage(`O bairro deve conter no mínimo 5 caracteres!`)
+          .custom(minLength(2))
+          .withMessage(`O bairro deve conter no mínimo 2 caracteres!`)
           .custom(maxLength(255))
           .withMessage(`O bairro deve conter no máximo 255 caracteres!`)
           .isAlpha('pt-BR', {ignore: ' '})
@@ -108,8 +121,10 @@ router.post('/',
           .withMessage(`O estado deve ser informado!`)
           .notEmpty({ignore_whitespace: true})
           .withMessage(`O estado não deve ser vazio!`)
-          .isLength({min: 2, max: 2})
-          .withMessage(`O estado deve conter 2 caracteres!`),
+          .custom(minLength(2))
+          .withMessage(`O estado deve conter no mínimo 2 caracteres!`)
+          .custom(maxLength(20))
+          .withMessage(`O estado deve conter no máximo 20 caracteres!`),
      body('address.complement')
           .optional({checkFalsy: true}),
      body('address.district')
@@ -143,6 +158,15 @@ router.post('/',
      body('update')
           .custom(nonRequired)
           .withMessage(`A data de atualização não deve ser informada!`),
+     body('rate')
+          .exists()
+          .custom(isNumber)
+          .withMessage(`A avaliação deve ser um número!`)
+          .custom(max(5))
+          .withMessage(`A avaliação deve ser menor que 5!`)
+          .custom(min(0))
+          .withMessage(`A avaliação deve ser maior que 0!`)
+     ,
      body('payments')
           .isArray({min: 1, max: 10})
           .withMessage('Deve haver no mínimo 1 e no máximo 10 tipos de pagamentos!'),
@@ -152,20 +176,26 @@ router.post('/',
      body('products')
           .isArray({min: 0, max: 200})
           .withMessage('O máximo de produtos cadastrados é 200!'),
+     validate,
+     auth,
      async (requisition, response) => {
           try {
-               validate(requisition, response);
-               const users = requisition.body.user;
-               users.forEach(async (userId) => {
+
+               const users = requisition.body.owners;
+               const body = requisition.body;
+               users?.forEach(async (userId) => {
                     const user = await User.findById(userId);
                     if (!user) {
                          requisition.status(HTTPS.UNPROCESSABLE_ENTITY).json({message: `Usuário ${userId} não encontrado!`})
                     }
-               })
-               const body = requisition.body;
-               Restaurant.create(requisition.body).then(() => {
-                    response.status(HTTPS.CREATED).json({message: `Restaurante ${body.name} criado com sucesso!`});
-               })
+               });
+               me(requisition, response).then((user) => {
+                    body.created = new Date();
+                    body.createdBy = `${user.name} ${user.surname}`
+                    Restaurant.create(body).then(() => {
+                         response.status(HTTPS.CREATED).json({message: `Restaurante ${body.name} criado com sucesso!`});
+                    })
+               });
           } catch (errors) {
                response.status(HTTPS.INTERNAL_SERVER_ERROR).json({errors});
           }

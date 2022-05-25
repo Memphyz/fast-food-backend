@@ -9,7 +9,6 @@ const Product = schema('Product', {
      description: String,
      price: Number,
      active: Boolean,
-     payment: [{type: String, ref: 'Payment'}],
      restaurant: {type: Schema.Types.ObjectId, ref: 'Restaurant'},
      client: {type: Schema.Types.ObjectId, ref: 'User'},
      additionals: [{type: Object, ref: 'Additional'}],
