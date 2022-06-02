@@ -29,8 +29,15 @@ router.post('/',
           .withMessage('O frete deve ser informado!')
           .notEmpty({ignore_whitespace: true})
           .withMessage('O frete não deve ser vazio!')
-          .isNumeric({no_symbols: true})
+          .isNumeric()
           .withMessage('O frete deve ser um número!'),
+     body('photo')
+          .exists()
+          .withMessage('A foto do restaurante deve ser informada!')
+          .notEmpty({ignore_whitespace: true})
+          .withMessage('A foto do restaurante não deve ser vazia!')
+          .isURL()
+          .withMessage('A foto do restaurante deve ser uma URL válida!'),
      body('kitchen')
           .exists()
           .withMessage('A cozinha deve ser informada!')
@@ -197,7 +204,9 @@ router.post('/',
                     })
                });
           } catch (errors) {
-               response.status(HTTPS.INTERNAL_SERVER_ERROR).json({errors});
+               response
+                    .status(HTTPS.INTERNAL_SERVER_ERROR)
+                    .json({error: error, message: error?.message});
           }
      });
 

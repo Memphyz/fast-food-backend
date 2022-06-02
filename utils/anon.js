@@ -1,6 +1,6 @@
 
 const pseudoAnon = (fields, body, anon) => {
-     if (anon === false) {
+     if (anon === false || anon === 'false') {
           return body;
      }
      fields.forEach((field) => {

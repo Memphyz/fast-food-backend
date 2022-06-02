@@ -11,7 +11,9 @@ router.get('/:id', (requisition, response) => {
                response.status(HTTPS.OK).json(restaurant)
           })
      } catch (error) {
-          response.status(HTTPS.INTERNAL_SERVER_ERROR).json({errors});
+          response
+               .status(HTTPS.INTERNAL_SERVER_ERROR)
+               .json({error: error, message: error?.message});
      }
 });
 

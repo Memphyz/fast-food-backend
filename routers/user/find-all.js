@@ -5,19 +5,25 @@ const router = require("./create");
 const anonFields = ['cpf', 'password']
 router.get("/", async (requisition, response) => {
   const {ids, anon, page, sort, limit} = requisition.query
-  if (ids) {
-    const users = await findUsers({
-      _id: {$in: ids},
-    }, anon, limit, page, sort);
+  try {
+    if (ids) {
+      const users = await findUsers({
+        _id: {$in: ids},
+      }, anon, limit, page, sort);
+      response.status(HTTPS.OK).json(users);
+      return undefined
+    }
+    const users = await findUsers(undefined, anon, limit, page, sort);
     response.status(HTTPS.OK).json(users);
-    return undefined
+  } catch (error) {
+    response
+      .status(HTTPS.INTERNAL_SERVER_ERROR)
+      .json({error: error, message: error?.message});
   }
-  const users = await findUsers(undefined, anon, limit, page, sort);
-  response.status(HTTPS.OK).json(users);
 });
 
 const findUsers = async (params, anon, limit, page, sort) => {
-  const users = await User.find(params).limit(limit || 20).skip(page || 0).sort(sort || 'name')
+  const users = await User.find(params).limit(limit || 20).skip(page || 0).sort(sort || 'name');
   return pseudoAnon(anonFields, users, anon)
 }
 
