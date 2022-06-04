@@ -4,6 +4,7 @@ const Additional = schema('Additionals', {
      unitPrice: Number,
      total: Number,
      quantity: Number,
+     description: String,
      name: String,
      notes: String
 });

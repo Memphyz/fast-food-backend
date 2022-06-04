@@ -7,6 +7,7 @@ const {minLength, maxLength} = require("./../../utils/validators");
 const HTTPS = require("../../utils/responses");
 const User = require("../../models/User");
 const {validate} = require("../../models/User");
+const CryptoJS = require("crypto-js")
 
 const router = Router();
 
@@ -58,8 +59,8 @@ router.post('/login',
                const token = jwt.sign({
                     id: user._id
                }, secret);
-               const cryptedUser = await bcrypt.hash(JSON.stringify(user), salt)
-               response.status(HTTPS.OK).json({title: 'Bom te ver por aqui!', message: `Bem vindo ${user.name} ${user.surname}!`, token, user: cryptedUser})
+               const cryptedUser = CryptoJS.AES.encrypt(JSON.stringify(user), secret).toString()
+               response.status(HTTPS.OK).json({title: 'Bom te ver por aqui!', message: `Bem vindo ${user.name} ${user.surname}!`, token, user: cryptedUser, id: process.env.SECRET})
           } catch (error) {
                response
                     .status(HTTPS.INTERNAL_SERVER_ERROR)

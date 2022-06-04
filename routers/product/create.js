@@ -1,10 +1,12 @@
 const {Router} = require("express");
 const {body} = require("express-validator");
 const Product = require("../../models/Product");
+const Restaurant = require("../../models/Restaurant");
+const includeAudit = require("../../utils/audit-data");
 const auth = require("../../utils/check-token");
 const HTTPS = require("../../utils/responses");
 const validate = require("../../utils/validate");
-const {maxLength, minLength} = require("../../utils/validators");
+const {maxLength, minLength, nonRequired} = require("../../utils/validators");
 
 
 const router = Router();
@@ -51,6 +53,12 @@ router.post('/',
           .withMessage('A imagem do produto não deve ser vazia!')
           .isURL()
           .withMessage('A imagem do produto deve ser uma URL válida!'),
+     body('created')
+          .custom(nonRequired)
+          .withMessage('A data de criação do produto não deve ser informada!'),
+     body('createdBy')
+          .custom(nonRequired)
+          .withMessage('O usuário de criação do produto não deve ser informado!'),
      body('restaurant')
           .exists()
           .withMessage('O restaurante do produto deve ser informado!')
@@ -71,7 +79,7 @@ router.post('/',
           .withMessage('O preço unitário do adicional deve ser informado!')
           .notEmpty({ignore_whitespace: true})
           .withMessage('O preço unitário do adicional não deve ser vazio!')
-          .isNumeric({no_symbols: true})),
+          .isNumeric(),
      body('additionals.*.name')
           .exists()
           .withMessage('O nome do adicional deve ser informado!')
@@ -95,7 +103,7 @@ router.post('/',
      body('additionals.*.notes')
           .optional()
           .custom(maxLength(255))
-          .withMessage('As observações do adicional devem conter no mínimo 255 caracteres!'),
+          .withMessage('As observações do adicional devem conter no máximo 255 caracteres!'),
      body('additionals.*.quantity')
           .exists()
           .withMessage('A quantidade do adicional deve ser informada!')
@@ -111,17 +119,17 @@ router.post('/',
           .isNumeric()
           .withMessage('O total do adicional deve ser um número!'),
 
-     validate, auth, (requisition, response) => {
-          const body = requisition.body;
+     validate, auth, includeAudit, (requisition, response) => {
+          const body = {...requisition.body};
           try {
-               // Product.create(body).then(() => {
-               // })
-               response.status(HTTPS.CREATED).json({message: `Produto ${body.name} criado com sucesso!`});
+               Product.create(body).then((product) => {
+                    Restaurant.updateOne({_id: body.restaurant}, {$push: {products: product._id}}).then(() => {
+                         return response.status(HTTPS.CREATED).json({message: `Produto ${body.name} criado com sucesso!`});
+                    })
+               })
           } catch (error) {
-               response
-                    .status(HTTPS.INTERNAL_SERVER_ERROR)
-                    .json({error: error, message: error?.message});
+               // return response.json({error: error, message: error?.message});
           }
-     };
+     });
 
 module.exports = router;

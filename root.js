@@ -6,6 +6,8 @@ const products_endpoints = require("./routers/product/product-module");
 const cors = require("cors");
 require("dotenv").config();
 const config = require("./server-config");
+const HTTPS = require("./utils/responses");
+const {Router} = require("express");
 
 const app = express();
 const URL = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@fastapi.pouco.mongodb.net/${config.db.name}?retryWrites=true&w=majority`;
@@ -19,9 +21,9 @@ app.setMaxListeners(10)
 app.use(express.json());
 app.use(cors());
 
+app.use('/api/v1/product', products_endpoints);
 app.use("/api/v1/user", user_endpoints);
-app.use('/api/v1/restaurant', restaurants_endpoints)
-app.use('/api/v1/product', products_endpoints)
+app.use('/api/v1/restaurant', restaurants_endpoints);
 
 mongoose
   .connect(URL)
