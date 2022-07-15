@@ -14,10 +14,11 @@ const Order = schema('Order', {
      address: {
           country: String,
           street: String,
-          postal: Number,
-          neighborhood: String,
+          postalCode: Number,
+          district: String,
           number: Number,
           complement: String,
+          reference: String,
           type: {
                type: String,
                enum: ['COMMERCIAL', 'RESIDENTIAL', 'KINSHIP'],
