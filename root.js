@@ -4,6 +4,7 @@ const user_endpoints = require("./routers/user/user-module");
 const restaurants_endpoints = require("./routers/restaurant/restaurant-module");
 const products_endpoints = require("./routers/product/product-module");
 const orders_endpoints = require("./routers/order/order-module");
+const address_endpoints = require("./routers/address/address-router");
 const cors = require("cors");
 require("dotenv").config();
 const config = require("./server-config");
@@ -25,6 +26,7 @@ app.use(`${API_VERSION_URL}/product`, products_endpoints);
 app.use(`${API_VERSION_URL}/user`, user_endpoints);
 app.use(`${API_VERSION_URL}/restaurant`, restaurants_endpoints);
 app.use(`${API_VERSION_URL}/order`, orders_endpoints);
+app.use(`${API_VERSION_URL}/address`, address_endpoints);
 
 mongoose
   .connect(URL)

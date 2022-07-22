@@ -1,8 +1,10 @@
 const {Router} = require("express");
 const {body} = require("express-validator");
+const jwt = require("jsonwebtoken");
 const Order = require("../../models/Order");
 const includeAudit = require("../../utils/audit-data");
 const auth = require("../../utils/check-token");
+const me = require("../../utils/me");
 const HTTPS = require("../../utils/responses");
 const validate = require("../../utils/validate");
 const {maxLength, minLength, length} = require("../../utils/validators");
@@ -121,100 +123,23 @@ router.post('/',
           .exists()
           .withMessage('O endereço deve ser informado!')
           .notEmpty()
-          .withMessage('O endereço não pode ser vazio!'),
-     body('address.country')
-          .exists()
-          .withMessage('O país deve ser informado!')
-          .notEmpty()
-          .withMessage('O país não pode ser vazio!')
-          .custom(minLength(2))
-          .withMessage('O país deve conter no mínimo 2 caracteres!')
-          .matches(/^(BRAZIL)$/)
-          .withMessage('Os serviços dessa aplicação por hora não cobrem outro país a não ser o Brasil'),
-     body('address.city')
-          .exists()
-          .withMessage('A cidade deve ser informada!')
-          .notEmpty()
-          .withMessage('A cidade não pode ser vazia!')
-          .custom(minLength(2))
-          .withMessage('A cidade deve conter no mínimo 2 caracteres!')
-          .custom(maxLength(50))
-          .withMessage('A cidade deve conter no máximo 50 caracteres!')
-          .isAlpha()
-          .withMessage('A cidade não pode conter números!'),
-     body('address.state')
-          .exists()
-          .withMessage('O estado deve ser informado!')
-          .notEmpty()
-          .withMessage('O estado não pode ser vazio!')
-          .custom(minLength(2))
-          .withMessage('O estado deve conter no mínimo 2 caracteres!')
-          .custom(maxLength(50))
-          .withMessage('O estado deve conter no máximo 50 caracteres!')
-          .isAlpha()
-          .withMessage('O estado não pode conter números!'),
-     body('address.street')
-          .exists()
-          .withMessage('O nome da rua deve ser informado!')
-          .notEmpty()
-          .withMessage('O nome da rua não pode ser vazio!')
-          .custom(minLength(2))
-          .withMessage('O nome da rua deve conter no mínimo 2 caracteres!')
-          .custom(maxLength(80))
-          .withMessage('O nome da rua deve conter no máximo 80 caracteres!'),
-     body('address.reference')
-          .custom(minLength(2))
-          .withMessage('O ponto de referência deve conter no mínimo 2 caracteres!')
-          .custom(maxLength(100))
-          .withMessage('O ponto de referência deve conter no máximo 100 caracteres!'),
-     body('address.postalCode')
-          .exists()
-          .withMessage('O CEP deve ser informado!')
-          .notEmpty()
-          .withMessage('O CEP não pode ser vazio!')
-          .custom(length(8))
-          .withMessage('O CEP deve ter a quantidade de 8 caracteres!'),
-     body('address.district')
-          .exists()
-          .withMessage('O bairro deve ser informado!')
-          .notEmpty()
-          .withMessage('O bairro não pode ser vazio!')
-          .custom(minLength(5))
-          .withMessage('O bairro deve conter ao menos 5 caracteres!')
-          .custom(maxLength(80))
-          .withMessage('O Bairro deve conter no máximo 80 caracteres!'),
-     body('address.number')
-          .exists()
-          .withMessage('O número do local deve ser informado!')
-          .notEmpty()
-          .withMessage('O número do local n deve ser vazio!')
-          .custom(minLength(1))
-          .withMessage('O número do local deve conter ao menos 1 caractere!')
-          .custom(maxLength(8))
-          .withMessage('O número do local deve conter no mãximo 8 caracteres!'),
-     body('address.complement')
-          .optional()
-          .isAlphanumeric()
-          .withMessage('O complemento deve ser alfanumérico')
-          .custom(maxLength(60))
-          .withMessage('O complemento deve conter no máximo 60 caracteres!'),
-     body('address.type')
-          .exists()
-          .withMessage('O tipo de endereço deve ser informado!')
-          .notEmpty()
-          .withMessage('O tipo de endereço não pode ser vazio!')
-          .matches(/^(COMMERCIAL|RESIDENTIAL|KINSHIP)$/)
-          .withMessage('O tipo de endereço informado é inválido'),
+          .withMessage('O endereço não pode ser vazio!')
+          .isMongoId()
+          .withMessage('O endereço deve ser um mongo id válido!'),
      validate,
      auth,
      includeAudit,
      async (requisition, response) => {
+          const secret = process.env.SECRET;
+          const authorization = requisition.headers.authorization.split(' ')[1],
+               decoded = jwt.verify(authorization, secret);
           requisition.body = {
                ...requisition.body,
                address: {
                     ...requisition.body.address,
                     number: +requisition.body.address.number,
-                    postal: +requisition.body.address.postal
+                    postal: +requisition.body.address.postal,
+                    user: decoded.id
                },
                status: 'CONFIRM_ORDER'
           }

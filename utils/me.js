@@ -3,7 +3,7 @@ const HTTPS = require("./responses");
 const jwt = require("jsonwebtoken");
 
 
-const me = async (requisition, response) => {
+const me = async (requisition) => {
      if (requisition.headers && requisition.headers.authorization) {
           var authorization = requisition.headers.authorization.split(' ')[1],
                decoded;
