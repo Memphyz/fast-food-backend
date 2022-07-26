@@ -9,9 +9,8 @@ router.get('/', async (requisition, response) => {
      const secret = process.env.SECRET;
      const authorization = requisition.headers.authorization.split(' ')[1],
           decoded = jwt.verify(authorization, secret);
-     const {limit, page, sort} = requisition.params;
+     const {limit, page, sort} = requisition.query;
      Address.find({user: decoded.id}).limit(limit || 20).skip(page || 0).sort(sort || {created: -1}).then((addreses) => {
-          console.log(addreses);
           response.status(HTTPS.OK).json(addreses);
      })
 });
