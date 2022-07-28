@@ -1,4 +1,4 @@
-const {Schema} = require("mongoose");
+const {Schema, Types} = require("mongoose");
 const schema = require("../utils/global-schema");
 
 const Order = schema('Order', {
@@ -12,18 +12,7 @@ const Order = schema('Order', {
      }],
      payment: {type: String, ref: 'Payment'},
      address: {
-          country: String,
-          street: String,
-          postalCode: Number,
-          district: String,
-          number: Number,
-          complement: String,
-          reference: String,
-          type: {
-               type: String,
-               enum: ['COMMERCIAL', 'RESIDENTIAL', 'KINSHIP'],
-               required: true
-          }
+          type: Schema.Types.ObjectId, ref: 'Address'
      },
      rating: Number,
      overview: String,

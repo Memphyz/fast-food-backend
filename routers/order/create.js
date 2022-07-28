@@ -50,60 +50,7 @@ router.post('/',
           .optional()
           .custom(maxLength(255))
           .withMessage('As observações do produto deve ter no máximo 255 caracteres!'),
-     body('products.*.name')
-          .exists()
-          .withMessage('O nome do produto deve ser informado!')
-          .notEmpty({ignore_whitespace: false})
-          .withMessage('O nome do produto não deve ser vazio!')
-          .custom(minLength(2))
-          .withMessage('O nome do produto deve conter no mínimo 2 caracteres!')
-          .custom(maxLength(50))
-          .withMessage('O nome do produto deve conter no máximo 50 caracteres!')
-          .isAlpha('pt-BR', {ignore: ' '})
-          .withMessage('O nome do produto deve conter apenas letras!'),
-     body('products.*.description')
-          .exists()
-          .withMessage('A descrição do produto deve ser informada!')
-          .notEmpty({ignore_whitespace: false})
-          .withMessage('A descrição do produto não deve ser vazia!')
-          .custom(minLength(5))
-          .withMessage('A descrição do produto deve conter no mínimo 5 caracteres!')
-          .custom(maxLength(255))
-          .withMessage('A descrição do produto deve conter no máximo 255 caracteres!'),
-     body('products.*.price')
-          .exists()
-          .withMessage('O preço do produto deve ser informado!')
-          .notEmpty({ignore_whitespace: true})
-          .withMessage('O preço do produto não deve ser vazio!')
-          .isNumeric()
-          .withMessage('O preço do produto deve ser um número!'),
-     body('products.*.active')
-          .exists()
-          .withMessage('O status do produto deve ser informado!')
-          .notEmpty({ignore_whitespace: true})
-          .withMessage('O status do produto não deve ser vazio!')
-          .isBoolean()
-          .withMessage('O status do produto deve ser um booleano!'),
-     body('products.*.image')
-          .exists()
-          .withMessage('A imagem do produto deve ser informada!')
-          .notEmpty({ignore_whitespace: true})
-          .withMessage('A imagem do produto não deve ser vazia!')
-          .isURL()
-          .withMessage('A imagem do produto deve ser uma URL válida!'),
-     body('products.*.restaurant')
-          .exists()
-          .withMessage('O restaurante do produto deve ser informado!')
-          .notEmpty({ignore_whitespace: true})
-          .withMessage('O restaurante do produto não deve ser vazio!')
-          .isMongoId()
-          .withMessage('O restaurante do produto deve ser um ID válido!'),
-     body('products.*.client')
-          .exists()
-          .withMessage('O cliente do produto deve ser informado!')
-          .notEmpty({ignore_whitespace: true})
-          .withMessage('O cliente do produto não deve ser vazio!')
-          .isMongoId(),
+
      body('payment')
           .exists()
           .withMessage('O pagamento deve ser informado!')
@@ -135,12 +82,7 @@ router.post('/',
                decoded = jwt.verify(authorization, secret);
           requisition.body = {
                ...requisition.body,
-               address: {
-                    ...requisition.body.address,
-                    number: +requisition.body.address.number,
-                    postal: +requisition.body.address.postal,
-                    user: decoded.id
-               },
+               user: decoded.id,
                status: 'CONFIRM_ORDER'
           }
           await Order.create(requisition.body).then((order) => {
