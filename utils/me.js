@@ -19,4 +19,11 @@ const me = async (requisition) => {
      }
 }
 
-module.exports = me;
+const id = (requisition) => {
+     const secret = process.env.SECRET;
+     const auth = requisition.headers.authorization.split(' ')[1]
+     const decoded = jwt.verify(auth, secret)
+     return decoded.id;
+}
+
+module.exports = {me, id};

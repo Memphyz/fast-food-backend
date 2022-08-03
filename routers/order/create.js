@@ -18,6 +18,9 @@ router.post('/',
      body('deliveryTime')
           .isEmpty()
           .withMessage('A hora de entrega deve estar vazia!'),
+     body('number')
+          .isEmpty()
+          .withMessage('A número do pedido não deve ser informado!'),
      body('ended')
           .isEmpty()
           .withMessage('A hora de finalização não deve ser informada!'),
@@ -82,6 +85,7 @@ router.post('/',
                decoded = jwt.verify(authorization, secret);
           requisition.body = {
                ...requisition.body,
+               number: Math.round(Math.random() * 999999),
                user: decoded.id,
                status: 'CONFIRM_ORDER'
           }

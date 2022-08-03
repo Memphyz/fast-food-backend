@@ -1,4 +1,4 @@
-const me = require('./me')
+const {me} = require("./me");
 
 const includeAudit = async (requisition, response, next) => {
      const user = await me(requisition);

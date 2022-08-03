@@ -15,7 +15,12 @@ const Order = schema('Order', {
           type: Schema.Types.ObjectId, ref: 'Address'
      },
      rating: Number,
+     number: Number,
      overview: String,
+     created: Date,
+     updated: Date,
+     createdBy: String,
+     updatedBy: String,
      status: {
           type: String,
           enum: ['CONFIRM_ORDER', 'START_PREPARATION', 'READY_PICKUP', 'DISPATCH', 'CANCEL_REQUEST', 'CANCELLED', 'DENY_CANCEL'],
