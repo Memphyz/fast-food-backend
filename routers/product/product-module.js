@@ -1,8 +1,9 @@
 const {Router} = require("express");
 
 const create = require('./create');
-const findAllById = require('./find-all-by-id');
+const findAllByRestaurantId = require('./find-all-by-restaurant-id');
+const findById = require('./find-by-id')
 
-const router = Router().use(create, findAllById);
+const router = Router().use(create, findAllByRestaurantId, findById);
 
 module.exports = router;
