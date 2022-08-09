@@ -1,8 +1,10 @@
 const express = require("express");
 const {default: mongoose} = require("mongoose");
 const user_endpoints = require("./routers/user/user-module");
-const restaurants_endpoints = require("./routers/restaurant/restaurant-module");
+const restaurant_endpoints = require("./routers/restaurant/restaurant-module");
+const restaurants_endpoints = require("./routers/restaurant/restaurants-module");
 const products_endpoints = require("./routers/product/product-module");
+const products_many_endpoints = require("./routers/product/products-module");
 const orders_endpoints = require("./routers/order/order-module");
 const address_endpoints = require("./routers/address/address-router");
 const cors = require("cors");
@@ -23,8 +25,10 @@ app.use(express.json());
 app.use(cors());
 
 app.use(`${API_VERSION_URL}/product`, products_endpoints);
+app.use(`${API_VERSION_URL}/products`, products_many_endpoints);
 app.use(`${API_VERSION_URL}/user`, user_endpoints);
-app.use(`${API_VERSION_URL}/restaurant`, restaurants_endpoints);
+app.use(`${API_VERSION_URL}/restaurant`, restaurant_endpoints);
+app.use(`${API_VERSION_URL}/restaurants`, restaurants_endpoints);
 app.use(`${API_VERSION_URL}/order`, orders_endpoints);
 app.use(`${API_VERSION_URL}/address`, address_endpoints);
 

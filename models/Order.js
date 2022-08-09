@@ -8,7 +8,8 @@ const Order = schema('Order', {
      user: {type: Schema.Types.ObjectId, ref: 'User'},
      products: [{
           id: {type: Schema.Types.ObjectId, ref: 'Product'},
-          notes: String
+          notes: String,
+          addictionals: [{type: Object, ref: 'Additional'}]
      }],
      payment: {type: String, ref: 'Payment'},
      address: {

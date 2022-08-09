@@ -2,7 +2,8 @@ const {Router} = require("express");
 
 const create = require('./create');
 const findAllByRestaurantId = require('./find-all-by-restaurant-id');
-const findById = require('./find-by-id')
+const findById = require('./find-by-id');
+const findManyById = require('./find-many-by-id');
 
 const router = Router().use(create, findAllByRestaurantId, findById);
 
