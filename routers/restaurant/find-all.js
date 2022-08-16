@@ -7,11 +7,12 @@ const router = Router();
 router.get('/', (requisition, response) => {
      try {
           const anon = requisition.query.anon;
-          Restaurant.find().limit(requisition.query.limit || 20)
-               .skip(requisition.query.page || 0)
-               .sort(requisition.query.sort || '--created').then((restaurants) => {
-                    response.status(HTTPS.OK).json(restaurants);
-               })
+          let {limit, page, sort, search} = requisition.query;
+          limit ||= 20;
+          page ||= 0;
+          Restaurant.find({name: {'$regex': search || '', '$options': 'i'}}, 'active close created createdby freight id kitchen name open photo rate').limit(limit).skip((limit * page)).sort(sort || '--created').then((restaurants) => {
+               response.status(HTTPS.OK).json(restaurants);
+          })
      } catch (error) {
           response
                .status(HTTPS.INTERNAL_SERVER_ERROR)
