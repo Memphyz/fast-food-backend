@@ -66,12 +66,6 @@ router.post('/',
           .withMessage('O restaurante do produto não deve ser vazio!')
           .isMongoId()
           .withMessage('O restaurante do produto deve ser um ID válido!'),
-     body('client')
-          .exists()
-          .withMessage('O cliente do produto deve ser informado!')
-          .notEmpty({ignore_whitespace: true})
-          .withMessage('O cliente do produto não deve ser vazio!')
-          .isMongoId(),
      body('additionals')
           .optional(),
      body('additionals.*.unitPrice')
@@ -105,17 +99,11 @@ router.post('/',
           .custom(maxLength(255))
           .withMessage('As observações do adicional devem conter no máximo 255 caracteres!'),
      body('additionals.*.quantity')
-          .exists()
-          .withMessage('A quantidade do adicional deve ser informada!')
-          .notEmpty({ignore_whitespace: true})
-          .withMessage('A quantidade do adicional não deve ser vazia!')
+          .optional()
           .isNumeric()
           .withMessage('A quantidade do adicional deve ser um número!'),
      body('additionals.*.total')
-          .exists()
-          .withMessage('O total do adicional deve ser informado!')
-          .notEmpty({ignore_whitespace: true})
-          .withMessage('O total do adicional não deve ser vazio!')
+          .optional()
           .isNumeric()
           .withMessage('O total do adicional deve ser um número!'),
 

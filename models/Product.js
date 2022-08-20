@@ -15,7 +15,6 @@ const Product = schema('Product', {
      createdBy: String,
      updatedBy: String,
      restaurant: {type: Schema.Types.ObjectId, ref: 'Restaurant'},
-     client: {type: Schema.Types.ObjectId, ref: 'User'},
      additionals: [{type: Object, ref: 'Additional'}],
 })
 module.exports = Product;

@@ -6,7 +6,7 @@ const Restaurant = schema('Restaurant', {
      name: String,
      freight: Number,
      kitchen: String,
-     address: {type: Object, ref: 'Address'},
+     address: {type: Schema.Types.ObjectId, ref: 'Address'},
      active: Boolean,
      photo: String,
      open: String,
