@@ -1,5 +1,6 @@
 const {Router} = require("express");
 const {body} = require("express-validator");
+const Additional = require("../../models/Additional");
 const Product = require("../../models/Product");
 const Restaurant = require("../../models/Restaurant");
 const includeAudit = require("../../utils/audit-data");
@@ -12,7 +13,7 @@ const {maxLength, minLength, nonRequired} = require("../../utils/validators");
 const router = Router();
 
 router.post('/',
-     body('name')
+     body('*.name')
           .exists()
           .withMessage('O nome do produto deve ser informado!')
           .notEmpty({ignore_whitespace: false})
@@ -23,7 +24,7 @@ router.post('/',
           .withMessage('O nome do produto deve conter no máximo 50 caracteres!')
           .isAlpha('pt-BR', {ignore: ' '})
           .withMessage('O nome do produto deve conter apenas letras!'),
-     body('description')
+     body('*.description')
           .exists()
           .withMessage('A descrição do produto deve ser informada!')
           .notEmpty({ignore_whitespace: false})
@@ -32,47 +33,47 @@ router.post('/',
           .withMessage('A descrição do produto deve conter no mínimo 5 caracteres!')
           .custom(maxLength(255))
           .withMessage('A descrição do produto deve conter no máximo 255 caracteres!'),
-     body('price')
+     body('*.price')
           .exists()
           .withMessage('O preço do produto deve ser informado!')
           .notEmpty({ignore_whitespace: true})
           .withMessage('O preço do produto não deve ser vazio!')
           .isNumeric()
           .withMessage('O preço do produto deve ser um número!'),
-     body('active')
+     body('*.active')
           .exists()
           .withMessage('O status do produto deve ser informado!')
           .notEmpty({ignore_whitespace: true})
           .withMessage('O status do produto não deve ser vazio!')
           .isBoolean()
           .withMessage('O status do produto deve ser um booleano!'),
-     body('image')
+     body('*.image')
           .exists()
           .withMessage('A imagem do produto deve ser informada!')
           .notEmpty({ignore_whitespace: true})
           .withMessage('A imagem do produto não deve ser vazia!'),
-     body('created')
+     body('*.created')
           .custom(nonRequired)
           .withMessage('A data de criação do produto não deve ser informada!'),
-     body('createdBy')
+     body('*.createdBy')
           .custom(nonRequired)
           .withMessage('O usuário de criação do produto não deve ser informado!'),
-     body('restaurant')
+     body('*.restaurant')
           .exists()
           .withMessage('O restaurante do produto deve ser informado!')
           .notEmpty({ignore_whitespace: true})
           .withMessage('O restaurante do produto não deve ser vazio!')
           .isMongoId()
           .withMessage('O restaurante do produto deve ser um ID válido!'),
-     body('additionals')
+     body('*.additionals')
           .optional(),
-     body('additionals.*.unitPrice')
+     body('*.additionals.*.unitPrice')
           .exists()
           .withMessage('O preço unitário do adicional deve ser informado!')
           .notEmpty({ignore_whitespace: true})
           .withMessage('O preço unitário do adicional não deve ser vazio!')
           .isNumeric(),
-     body('additionals.*.name')
+     body('*.additionals.*.name')
           .exists()
           .withMessage('O nome do adicional deve ser informado!')
           .notEmpty({ignore_whitespace: false})
@@ -83,7 +84,7 @@ router.post('/',
           .withMessage('O nome do adicional deve conter no máximo 50 caracteres!')
           .isAlpha('pt-BR', {ignore: ' '})
           .withMessage('O nome do adicional deve conter apenas letras!'),
-     body('additionals.*.description')
+     body('*.additionals.*.description')
           .exists()
           .withMessage('A descrição do adicional deve ser informada!')
           .notEmpty({ignore_whitespace: false})
@@ -92,25 +93,23 @@ router.post('/',
           .withMessage('A descrição do adicional deve conter no mínimo 5 caracteres!')
           .custom(maxLength(255))
           .withMessage('A descrição do adicional deve conter no máximo 255 caracteres!'),
-     body('additionals.*.notes')
+     body('*.additionals.*.notes')
           .optional()
           .custom(maxLength(255))
           .withMessage('As observações do adicional devem conter no máximo 255 caracteres!'),
-     body('additionals.*.quantity')
+     body('*.additionals.*.quantity')
           .optional()
           .isNumeric()
           .withMessage('A quantidade do adicional deve ser um número!'),
-     body('additionals.*.total')
+     body('*.additionals.*.total')
           .optional()
           .isNumeric()
           .withMessage('O total do adicional deve ser um número!'),
 
      validate, auth, includeAudit, (requisition, response) => {
-          const body = {...requisition.body};
-          Product.create(body).then((product) => {
-               Restaurant.updateOne({_id: body.restaurant}, {$push: {products: product._id}}).then(() => {
-                    return response.status(HTTPS.CREATED).json({message: `Produto ${body.name} criado com sucesso!`});
-               })
+          const body = [...requisition.body];
+          Product.insertMany(body).then((products) => {
+               return response.status(HTTPS.CREATED).json({products: products, message: `${products.length} ${products.length > 1 ? 'Produtos criados' : 'Produto criado'} com sucesso!`});
           })
      });
 

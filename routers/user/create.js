@@ -61,9 +61,9 @@ router.post(
     .withMessage("A data de nascimento não deve ser vazia!")
     .custom(isDate)
     .withMessage("A data de nascimento está inválida!"),
+  validate,
   async (requisition, response) => {
     try {
-      validate(requisition, response)
       const body = requisition.body;
       const exist = await User.findOne({
         $or: [

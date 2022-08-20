@@ -2,7 +2,7 @@ const {Router} = require("express");
 const {body, validationResult} = require("express-validator");
 const User = require("../../models/User");
 const auth = require("../../utils/check-token");
-const me = require("../../utils/me");
+const {me} = require("../../utils/me");
 const HTTPS = require("../../utils/responses");
 const validate = require("../../utils/validate");
 const {minLength, maxLength, nonRequired, max, min, isHours, isNumber} = require("../../utils/validators");
@@ -35,9 +35,7 @@ router.post('/',
           .exists()
           .withMessage('A foto do restaurante deve ser informada!')
           .notEmpty({ignore_whitespace: true})
-          .withMessage('A foto do restaurante não deve ser vazia!')
-          .isURL()
-          .withMessage('A foto do restaurante deve ser uma URL válida!'),
+          .withMessage('A foto do restaurante não deve ser vazia!'),
      body('kitchen')
           .exists()
           .withMessage('A cozinha deve ser informada!')
@@ -94,8 +92,6 @@ router.post('/',
           .withMessage(`A avaliação deve ser um número!`)
           .custom(max(5))
           .withMessage(`A avaliação deve ser menor que 5!`)
-          .custom(min(0))
-          .withMessage(`A avaliação deve ser maior que 0!`)
      ,
      body('payments')
           .isArray({min: 1, max: 10})
@@ -109,28 +105,21 @@ router.post('/',
      validate,
      auth,
      async (requisition, response) => {
-          try {
-
-               const users = requisition.body.owners;
-               const body = requisition.body;
-               users?.forEach(async (userId) => {
-                    const user = await User.findById(userId);
-                    if (!user) {
-                         requisition.status(HTTPS.UNPROCESSABLE_ENTITY).json({message: `Usuário ${userId} não encontrado!`})
-                    }
-               });
-               me(requisition, response).then((user) => {
-                    body.created = new Date();
-                    body.createdBy = `${user.name} ${user.surname}`
-                    Restaurant.create(body).then(() => {
-                         response.status(HTTPS.CREATED).json({message: `Restaurante ${body.name} criado com sucesso!`});
-                    })
-               });
-          } catch (errors) {
-               response
-                    .status(HTTPS.INTERNAL_SERVER_ERROR)
-                    .json({error: error, message: error?.message});
-          }
+          const users = requisition.body.owners;
+          const body = requisition.body;
+          users?.forEach(async (userId) => {
+               const user = await User.findById(userId);
+               if (!user) {
+                    requisition.status(HTTPS.UNPROCESSABLE_ENTITY).json({message: `Usuário ${userId} não encontrado!`})
+               }
+          });
+          me(requisition, response).then((user) => {
+               body.created = new Date();
+               body.createdBy = `${user.name} ${user.surname}`
+               Restaurant.create({...body, products: []}).then((restaurant) => {
+                    response.status(HTTPS.CREATED).json({message: `Restaurante ${body.name} criado com sucesso!`, id: restaurant.id});
+               })
+          });
      });
 
 module.exports = router;
