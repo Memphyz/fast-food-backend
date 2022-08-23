@@ -10,6 +10,7 @@ const address_endpoints = require("./routers/address/address-router");
 const cors = require("cors");
 require("dotenv").config();
 const config = require("./server-config");
+const bodyParser = require('body-parser');
 
 const app = express();
 const API_VERSION_URL = '/api/v1'
@@ -21,6 +22,8 @@ app.use(
   })
 );
 app.setMaxListeners(10);
+app.use(bodyParser.json({limit: '10mb', extended: true}))
+app.use(bodyParser.urlencoded({limit: '10mb', extended: true}))
 app.use(express.json());
 app.use(cors());
 
