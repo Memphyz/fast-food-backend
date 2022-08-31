@@ -1,6 +1,6 @@
 const {Router} = require("express");
 const {body} = require("express-validator");
-const {includeAudit} = require("../../utils/audit-data");
+const {updateAudit} = require("../../utils/audit-data");
 const auth = require("../../utils/check-token");
 const HTTPS = require("../../utils/responses");
 const jwt = require("jsonwebtoken");
@@ -10,7 +10,7 @@ const Address = require("../../models/Address");
 
 const router = Router();
 
-router.post('/',
+router.patch('/:id',
      body('user')
           .isEmpty()
           .withMessage('O usuário não deve ser informado'),
@@ -95,26 +95,14 @@ router.post('/',
           .withMessage('O tipo de endereço não pode ser vazio!')
           .matches(/^(COMMERCIAL|RESIDENTIAL|KINSHIP)$/)
           .withMessage('O tipo de endereço informado é inválido'),
-     body('created')
-          .custom(nonRequired)
-          .withMessage('A data de criação do endereço não deve ser informada!'),
-     body('createdBy')
-          .custom(nonRequired)
-          .withMessage('O usuário de criação do endereço não deve ser informado!'),
      validate,
      auth,
-     includeAudit,
+     updateAudit,
      async (requisition, response) => {
-          const secret = process.env.SECRET;
-          const authorization = requisition.headers.authorization.split(' ')[1],
-               decoded = jwt.verify(authorization, secret);
-          requisition.body = {
-               ...requisition.body,
-               user: decoded.id
-          },
-               Address.create(requisition.body).then(() => {
-                    response.status(HTTPS.CREATED).json({message: 'Endereço criado!'})
-               })
+          const {id} = requisition.params;
+          Address.updateOne({_id: id}, requisition.body).then(() => {
+               response.status(HTTPS.CREATED).json({message: 'Endereço atualizado!'})
+          })
      });
 
 module.exports = router;

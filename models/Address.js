@@ -10,6 +10,7 @@ const Address = schema('Address', {
      neighborhood: String,
      city: String,
      state: String,
+     type: String,
      complement: String,
      reference: String,
      district: String,
