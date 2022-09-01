@@ -1,8 +1,7 @@
 const {Router} = require("express");
-const {body, validationResult} = require("express-validator");
-const {cpf} = require("cpf-cnpj-validator");
+const {body} = require("express-validator");
 const bcrypt = require("bcrypt");
-const {minLength, maxLength, isDate} = require("./../../utils/validators");
+const {minLength, maxLength, isDate, cpf} = require("./../../utils/validators");
 const User = require("../../models/User");
 const HTTPS = require("../../utils/responses");
 const validate = require("../../utils/validate");
@@ -27,7 +26,7 @@ router.post(
     .withMessage("O CPF não pode ser vazio!")
     .isLength({min: 11, max: 11})
     .withMessage("O formato do CPF está inválido")
-    .custom(cpf.isValid)
+    .custom(cpf)
     .withMessage("O CPF informado está inválido"),
   body("name")
     .exists({checkNull: true})
