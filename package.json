@@ -2,10 +2,13 @@
   "name": "fast-food-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/server.js",
+  "engines": {
+    "node": "12.x"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ./root.js localhost 3000"
+    "start": "nodemon ./src/server.js localhost 3000"
   },
   "keywords": [],
   "author": "",
