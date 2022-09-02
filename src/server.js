@@ -1,15 +1,15 @@
 const express = require("express");
 const {default: mongoose} = require("mongoose");
-const user_endpoints = require("./../routers/user/user-module");
-const restaurant_endpoints = require("./../routers/restaurant/restaurant-module");
-const restaurants_endpoints = require("./../routers/restaurant/restaurants-module");
-const products_endpoints = require("./../routers/product/product-module");
-const products_many_endpoints = require("./../routers/product/products-module");
-const orders_endpoints = require("./../routers/order/order-module");
-const address_endpoints = require("./../routers/address/address-router");
+const user_endpoints = require("./routers/user/user-module");
+const restaurant_endpoints = require("./routers/restaurant/restaurant-module");
+const restaurants_endpoints = require("./routers/restaurant/restaurants-module");
+const products_endpoints = require("./routers/product/product-module");
+const products_many_endpoints = require("./routers/product/products-module");
+const orders_endpoints = require("./routers/order/order-module");
+const address_endpoints = require("./routers/address/address-router");
 const cors = require("cors");
 require("dotenv").config();
-const config = require("./../server-config");
+const config = require("./server-config");
 const bodyParser = require('body-parser');
 
 const app = express();

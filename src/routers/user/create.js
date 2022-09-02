@@ -2,9 +2,9 @@ const {Router} = require("express");
 const {body} = require("express-validator");
 const bcrypt = require("bcrypt");
 const {minLength, maxLength, isDate, cpf} = require("./../../utils/validators");
-const User = require("../../models/User");
-const HTTPS = require("../../utils/responses");
-const validate = require("../../utils/validate");
+const User = require("./../../models/User");
+const HTTPS = require("./../../utils/responses");
+const validate = require("./../../utils/validate");
 
 const router = Router();
 
