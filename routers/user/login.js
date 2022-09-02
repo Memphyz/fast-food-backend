@@ -1,9 +1,8 @@
 const {Router} = require("express");
 const {body} = require("express-validator");
-const {cpf} = require("cpf-cnpj-validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const {minLength, maxLength} = require("./../../utils/validators");
+const {minLength, maxLength, cpf} = require("./../../utils/validators");
 const HTTPS = require("../../utils/responses");
 const User = require("../../models/User");
 const {validate} = require("../../models/User");
@@ -20,7 +19,7 @@ router.post('/login',
      body("cpf")
           .isLength({min: 11, max: 11})
           .withMessage("O formato do CPF está inválido")
-          .custom(cpf.isValid)
+          .custom(cpf)
           .withMessage("O CPF informado está inválido"),
      body("password")
           .exists({checkNull: true})

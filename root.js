@@ -19,7 +19,7 @@ const URL = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@fas
 app.use(
   express.urlencoded({
     extended: true,
-  })
+  }),
 );
 app.setMaxListeners(10);
 app.use(bodyParser.json({limit: '10mb', extended: true}))
