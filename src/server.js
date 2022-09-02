@@ -39,6 +39,6 @@ mongoose
      .connect(URL)
      .then(() => {
           console.info("SUCESSO: Conectado ao database");
-          app.listen(config.app.port);
      })
      .catch(console.error);
+app.listen(config.app.port);
