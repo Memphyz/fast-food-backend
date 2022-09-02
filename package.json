@@ -23,6 +23,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.4.1",
     "nodemon": "^2.0.18",
+    "sapper": "^0.29.3",
     "vercel-sapper": "^0.44.0"
   }
 }
