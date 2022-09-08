@@ -42,3 +42,5 @@ mongoose
      })
      .catch(console.error);
 app.listen(config.app.port);
+
+module.exports = app;
